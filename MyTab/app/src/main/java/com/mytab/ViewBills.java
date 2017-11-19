@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +26,7 @@ public class ViewBills extends AppCompatActivity {
     static ArrayList<String> notes = new ArrayList<>();
     static ArrayAdapter arrayAdapter;
     static Set<String> set;
+    public static String item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,16 +35,45 @@ public class ViewBills extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.listView);
         notes.clear();
+        ArrayList<String> s= new ArrayList<>();
+        try{
+            SQLiteDatabase billInfo= openOrCreateDatabase("Bill",MODE_PRIVATE, null);
+            billInfo.execSQL("CREATE TABLE IF NOT EXISTS bill2017 (billID INTEGER PRIMARY KEY, billName TEXT, name VARCHAR, amount DOUBLE, total DOUBLE, tip DOUBLE)");
+            String query= "SELECT DISTINCT billName FROM bill2017";
+            Cursor m= billInfo.rawQuery(query, null);
+            m.moveToFirst();
+            int nameIndex= m.getColumnIndex("billName");
+            //HashSet<String> s= new HashSet<>();
+
+            while(true) {
+                //Log.i("index", String.valueOf(nameIndex));
+                s.add(m.getString(nameIndex));
+                Log.i("Values", m.getString(nameIndex));
+                if(m.isLast()){
+                    break;
+                }
+                m.moveToNext();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
 
-        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, notes);
+
+
+
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, s);
 
         listView.setAdapter(arrayAdapter);
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                item =(String)arrayAdapter.getItem(position);
+
 
                 Intent i = new Intent(getApplicationContext(), EditBillScreen.class);
                 i.putExtra("noteId", position);

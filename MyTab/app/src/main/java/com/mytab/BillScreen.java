@@ -1,5 +1,6 @@
 package com.mytab;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -58,8 +59,8 @@ public class BillScreen extends AppCompatActivity {
         adapt.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         tipType.setAdapter(adapt);
 
-        EditText total= (EditText) findViewById(R.id.totalNum);
-        EditText Tip= (EditText)findViewById(R.id.tipValue);
+        final EditText total= (EditText) findViewById(R.id.totalNum);
+        final EditText Tip= (EditText)findViewById(R.id.tipValue);
 
         total.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +116,8 @@ public class BillScreen extends AppCompatActivity {
         });
         final TableLayout ll = (TableLayout) findViewById(R.id.tableLayout); // the table view that holds all rows
         final Context context;
+        final ArrayList<EditText> peopleNames= new ArrayList<>();
+        final ArrayList<EditText> amounts= new ArrayList<>();
         context = this; // Setting the context to this in order to use it in the onclick event handler
         // TODO figure out how to properly position columns to take up the whole row
        final TableRow.LayoutParams lparams = new TableRow.LayoutParams(500,150);
@@ -139,8 +142,8 @@ public class BillScreen extends AppCompatActivity {
 
         // adding second row to table. Row has editviews and hints
         TableRow row= new TableRow(this);
-        EditText Price = new EditText(this);
-        EditText Name = new EditText(this);
+        final EditText Price = new EditText(this);
+        final EditText Name = new EditText(this);
         row.setLayoutParams(new TableRow.LayoutParams(
                 TableRow.LayoutParams.FILL_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT));
@@ -152,6 +155,8 @@ public class BillScreen extends AppCompatActivity {
         Price.setHint("Amount Paid");
         row.addView(Name);
         row.addView(Price);
+        peopleNames.add(Name);
+        amounts.add(Price);
         ll.addView(row);
 
 
@@ -159,62 +164,133 @@ public class BillScreen extends AppCompatActivity {
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.button3);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                TableRow row= new TableRow(context);
-                EditText Price = new EditText(context);
-                EditText Name = new EditText(context);
-                row.setLayoutParams(new TableRow.LayoutParams(
-                        TableRow.LayoutParams.FILL_PARENT,
-                        TableRow.LayoutParams.WRAP_CONTENT));
-                Price.setLayoutParams(lparams);
-                Price.setGravity(Gravity.CENTER_HORIZONTAL);
-                Price.setHint("Amount Paid");
-                Name.setLayoutParams(lparams);
-                Name.setHint("Name");
-                Name.setGravity(Gravity.CENTER_HORIZONTAL);
-                row.addView(Name);
-                row.addView(Price);
+                if(Price.getText().toString().trim().length() >0 && Name.getText().toString().trim().length() > 0) {
+                    TableRow row = new TableRow(context);
+                    EditText Price = new EditText(context);
+                    EditText Name = new EditText(context);
+                    row.setLayoutParams(new TableRow.LayoutParams(
+                            TableRow.LayoutParams.FILL_PARENT,
+                            TableRow.LayoutParams.WRAP_CONTENT));
+                    Price.setLayoutParams(lparams);
+                    Price.setGravity(Gravity.CENTER_HORIZONTAL);
+                    Price.setHint("Amount Paid");
+                    Name.setLayoutParams(lparams);
+                    Name.setHint("Name");
+                    Name.setGravity(Gravity.CENTER_HORIZONTAL);
+                    row.addView(Name);
+                    row.addView(Price);
+                    peopleNames.add(Name);
+                    amounts.add(Price);
 
-                ll.addView(row);
+                    ll.addView(row);
+                }
+                else{
+                    new AlertDialog.Builder(BillScreen.this)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Please make sure you fill out Name and Amount Paid")
+                            .setPositiveButton("Continue",null)
+                            .show();
+
+                }
+
 
             }
         });
 
-        final EditText input= new EditText(this);
+
         Button saveButton= (Button)findViewById(R.id.saveButton);
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new AlertDialog.Builder(BillScreen.this)
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Please enter the name of the bill")
-                        .setView(input)
-                        .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                try{
-                                    SQLiteDatabase billInfo= openOrCreateDatabase("Bill",MODE_PRIVATE, null);
-                                    billInfo.execSQL("CREATE TABLE IF NOT EXISTS bill (billID INT(3), name VARCHAR, amount DOUBLE)");
-                                    billInfo.execSQL("INSERT INTO bill (billID, name, amount) VALUES (1, 'Ben', 10.5)");
-                                    Cursor c = billInfo.rawQuery("SELECT * FROM bill", null);
+                if(total.getText().toString().trim().length() >0) {
+                    final EditText input = new EditText(context);
+                    new AlertDialog.Builder(BillScreen.this)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Please enter the name of the bill")
+                            .setView(input)
+                            .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                                    int billIDIndex= c.getColumnIndex("billID");
-                                    int nameIndex= c.getColumnIndex("name");
-                                    int amountIndex= c.getColumnIndex("amount");
-                                    c.moveToFirst();
-                                    while(c!=null){
-                                        Log.i("billID", Integer.toString(c.getInt(billIDIndex)));
-                                        Log.i("name", c.getString(nameIndex));
-                                        Log.i("amount", Double.toString(c.getDouble(amountIndex)));
-                                        c.moveToNext();
+                                    try{
+                                        SQLiteDatabase billInfo= openOrCreateDatabase("Bill",MODE_PRIVATE, null);
+                                        billInfo.execSQL("CREATE TABLE IF NOT EXISTS bill2017 (billID INTEGER PRIMARY KEY, billName VARCHAR, name VARCHAR, amount DOUBLE, total DOUBLE, tip DOUBLE)");
+                                        String query= "SELECT * FROM bill2017 WHERE billName = '"+input.getText().toString()+"'";
+                                        Cursor m= billInfo.query("bill2017", null, "billName='"+input.getText().toString()+"'", null,null,null,null);
+                                        m.moveToFirst();
+                                        //Log.i("m", m.getString(0));
+                                        if(m.getCount()<=0) {
+
+                                            for (int x = 0; x < peopleNames.size(); x++) {
+                                                ContentValues val = new ContentValues(5);
+                                                val.put("billName", input.getText().toString());
+                                                if (!peopleNames.get(x).getText().toString().equals("")) {
+                                                    val.put("name", peopleNames.get(x).getText().toString());
+                                                }
+                                                if (!amounts.get(x).getText().toString().equals("")) {
+                                                    val.put("amount", Double.parseDouble(amounts.get(x).getText().toString()));
+                                                }
+                                                val.put("total", Double.parseDouble(total.getText().toString()));
+                                                val.put("tip", Double.parseDouble(Tip.getText().toString()));
+                                                billInfo.insert("bill2017", null, val);
+                                            }
+                                            Cursor c = billInfo.rawQuery("SELECT * FROM bill2017", null);
+
+                                            int billIDIndex= c.getColumnIndex("billID");
+                                            int nameIndex= c.getColumnIndex("billName");
+                                            int peopleIndex= c.getColumnIndex("name");
+                                            int amountIndex= c.getColumnIndex("amount");
+                                            int totalIndex= c.getColumnIndex("total");
+                                            int tipIndex= c.getColumnIndex("tip");
+
+                                            //int amountIndex= c.getColumnIndex("amount");
+                                            Log.i("h", "here we are");
+                                            c.moveToFirst();
+                                            while(true){
+
+                                                Log.i("billID", Integer.toString(c.getInt(billIDIndex)));
+                                                Log.i("billName", c.getString(nameIndex));
+                                                Log.i("Name", c.getString(peopleIndex));
+                                                Log.i("amount", Double.toString(c.getDouble(amountIndex)));
+                                                Log.i("total", Double.toString(c.getDouble(totalIndex)));
+                                                Log.i("tip", Double.toString(c.getDouble(tipIndex)));
+                                                if(c.isLast()){
+                                                    return;
+                                                }
+                                                c.moveToNext();
+                                            }
+                                        }
+
+
+
+                                        else{
+                                            new AlertDialog.Builder(BillScreen.this)
+                                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                                    .setTitle("Bill Name already exists. Please enter new name")
+                                                    .setPositiveButton("OK",null)
+                                                    .show();
+
+                                        }
+
                                     }
-                                }
-                                catch(Exception e){
-                                    e.printStackTrace();
-                                }
+                                    catch(Exception e){
+                                        e.printStackTrace();
+                                    }
 
-                            }
-                        })
-                        .show();
+                                }
+                            })
+
+                            .show();
+                }
+                else{
+                    new AlertDialog.Builder(BillScreen.this)
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setTitle("Please enter a total")
+                            .setPositiveButton("OK",null)
+                            .show();
+
+                }
+
             }
         });
 
@@ -235,7 +311,7 @@ public class BillScreen extends AppCompatActivity {
             else{
                 finalCost= Float.parseFloat(total.getText().toString()) + Float.parseFloat(Tip.getText().toString());
             }
-            finTotal.setText(String.valueOf(finalCost));
+
         }
     }
 

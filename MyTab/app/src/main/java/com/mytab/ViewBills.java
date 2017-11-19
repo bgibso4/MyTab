@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ public class ViewBills extends AppCompatActivity {
 
         ListView listView = (ListView) findViewById(R.id.listView);
         notes.clear();
-
+        final EditText input = new EditText(this);
 
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, notes);
 
@@ -56,9 +57,9 @@ public class ViewBills extends AppCompatActivity {
 
                 new AlertDialog.Builder(ViewBills.this)
                         .setIcon(android.R.drawable.ic_dialog_alert)
-                        .setTitle("Are you sure?")
-                        .setMessage("Do you want to delete this note?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        .setTitle("Please enter the name of your bill")
+                        .setView(input)
+                        .setPositiveButton("submit", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
 

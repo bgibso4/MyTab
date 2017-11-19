@@ -6,11 +6,33 @@
     android:layout_height="match_parent"
     tools:context="com.mytab.BillScreen">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Save"
+            android:theme="@style/AppTheme.Button" />
+
+    </android.support.v7.widget.Toolbar>
+
     <EditText
         android:id="@+id/totalNum"
         android:layout_width="176dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="56dp"
         android:ems="10"
         android:inputType="numberDecimal"
         app:layout_constraintStart_toEndOf="@+id/textView"
@@ -20,8 +42,8 @@
         android:id="@+id/textView"
         android:layout_width="76dp"
         android:layout_height="35dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="64dp"
         android:text="Total:"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="24sp"
@@ -33,9 +55,9 @@
         android:layout_width="83dp"
         android:layout_height="28dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="64dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.461"
         app:layout_constraintStart_toEndOf="@+id/totalNum"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -50,11 +72,12 @@
         android:layout_height="25dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="52dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="128dp"
         android:text="Tip:"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/tipValue"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -62,8 +85,8 @@
         android:id="@+id/tipValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="108dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginTop="112dp"
         android:ems="10"
         android:inputType="numberDecimal"
         android:textSize="14sp"
@@ -75,9 +98,9 @@
         android:layout_width="83dp"
         android:layout_height="28dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="124dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.461"
         app:layout_constraintStart_toEndOf="@+id/totalNum"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -97,9 +120,11 @@
         android:layout_height="471dp"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="48dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/finalTotal">
+        app:layout_constraintTop_toBottomOf="@+id/tipValue">
 
         <TableRow
             android:id="@+id/tableRow1"

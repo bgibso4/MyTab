@@ -1,7 +1,12 @@
 package com.mytab;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,6 +16,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -19,6 +25,10 @@ import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashSet;
+
+import static com.mytab.ViewBills.notes;
+import static com.mytab.ViewBills.set;
 
 public class BillScreen extends AppCompatActivity {
 
@@ -169,9 +179,46 @@ public class BillScreen extends AppCompatActivity {
             }
         });
 
+        final EditText input= new EditText(this);
+        Button saveButton= (Button)findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(BillScreen.this)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setTitle("Please enter the name of the bill")
+                        .setView(input)
+                        .setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                try{
+                                    SQLiteDatabase billInfo= openOrCreateDatabase("Bill",MODE_PRIVATE, null);
+                                    billInfo.execSQL("CREATE TABLE IF NOT EXISTS bill (billID INT(3), name VARCHAR, amount DOUBLE)");
+                                    billInfo.execSQL("INSERT INTO bill (billID, name, amount) VALUES (1, 'Ben', 10.5)");
+                                    Cursor c = billInfo.rawQuery("SELECT * FROM bill", null);
+
+                                    int billIDIndex= c.getColumnIndex("billID");
+                                    int nameIndex= c.getColumnIndex("name");
+                                    int amountIndex= c.getColumnIndex("amount");
+                                    c.moveToFirst();
+                                    while(c!=null){
+                                        Log.i("billID", Integer.toString(c.getInt(billIDIndex)));
+                                        Log.i("name", c.getString(nameIndex));
+                                        Log.i("amount", Double.toString(c.getDouble(amountIndex)));
+                                        c.moveToNext();
+                                    }
+                                }
+                                catch(Exception e){
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        })
+                        .show();
+            }
+        });
+
     }
-
-
 
     public void setTotalText(){
         TextView finTotal= (TextView)findViewById(R.id.finalTotal);
@@ -191,4 +238,7 @@ public class BillScreen extends AppCompatActivity {
             finTotal.setText(String.valueOf(finalCost));
         }
     }
+
+
+
 }

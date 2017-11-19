@@ -10,8 +10,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.mytab.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/newBillButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Create New Bill" />
 </RelativeLayout>
